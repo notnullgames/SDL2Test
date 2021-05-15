@@ -18,7 +18,7 @@ add_custom_target(copy_assets
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
 )
 
-add_executable(SDL2Test WIN32 Main.cpp)
+add_executable(SDL2Test WIN32 main.cpp)
 add_dependencies(SDL2Test copy_assets)
 
 target_link_libraries(
