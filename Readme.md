@@ -1,4 +1,3 @@
-# Reference
+# SDLTest
 
-* [Using SDL2 with CMake](https://trenki2.github.io/blog/2017/06/02/using-sdl2-with-cmake/)
-* [Using SDL2_image with CMake](https://trenki2.github.io/blog/2017/07/04/using-sdl2-image-with-cmake/)
+This is just a very simple C++ test of SDL, so we cna see how the basic libraries perform on [nullos](https://github.com/notnullgames/nullos)
