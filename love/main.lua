@@ -2,6 +2,7 @@ local font = love.graphics.setNewFont(32)
 
 function love.load()
   love.window.setTitle("Love Tester")
+  love.mouse.setVisible(false)
   love.window.setFullscreen(true)
   love.window.setMode(320, 240, { vsync = 0 })
   love.graphics.setFont(font)
