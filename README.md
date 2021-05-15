@@ -5,9 +5,5 @@ This is just a very simple C++ test of SDL, so we can see how the basic librarie
 ## build
 
 ```
-mkdir build
-cd build
-cmake ..
 make
-./SDL2Test
 ```
