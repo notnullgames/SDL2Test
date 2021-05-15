@@ -3,11 +3,15 @@
 #include <SDL_timer.h>
 #include <SDL_ttf.h>
 
+// TODO: gamepad interface is nicer, I'm just unfamiliar
+
 int main(int argc, char *argv[]) {
   // for FPS counter
   Uint32 startclock = 0;
   Uint32 deltaclock = 0;
   Uint32 currentFPS = 0;
+
+  const int JOYSTICK_DEAD_ZONE = 8000;
 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
@@ -28,6 +32,19 @@ int main(int argc, char *argv[]) {
     SDL_WINDOWPOS_CENTERED,
     320, 240, 0
   );
+
+  SDL_Joystick* gGameController = NULL;
+
+  //Check for joysticks
+  if( SDL_NumJoysticks() < 1 ) {
+    printf( "Warning: No joysticks connected!\n" );
+  } else {
+    //Load joystick
+    gGameController = SDL_JoystickOpen(0);
+    if( gGameController == NULL ) {
+      printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+    }
+  }
 
   // creates a renderer to render our images
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
@@ -90,34 +107,55 @@ int main(int argc, char *argv[]) {
     // Events mangement
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
+        case SDL_QUIT:
+          // handling of close button
+          close = 1;
+          break;
 
-      case SDL_QUIT:
-        // handling of close button
-        close = 1;
-        break;
+        case SDL_JOYAXISMOTION:
+          switch (event.jaxis.axis) {
+            case 0: // X
+              if( event.jaxis.value < -JOYSTICK_DEAD_ZONE ) { // left
+                dest.x -= speed / 30;
+              } else if( event.jaxis.value > JOYSTICK_DEAD_ZONE ) { // right
+                dest.x += speed / 30;
+              }
+              break;
+            
+            case 1: // Y
+              if( event.jaxis.value < -JOYSTICK_DEAD_ZONE ) { // up
+                dest.y -= speed / 30;
+              } else if( event.jaxis.value > JOYSTICK_DEAD_ZONE ) { // down
+                dest.y += speed / 30;
+              }
+              break;
+            
+            default:
+              break;
+          }
 
-      case SDL_KEYDOWN:
-        // keyboard API for key pressed
-        switch (event.key.keysym.scancode) {
-        case SDL_SCANCODE_W:
-        case SDL_SCANCODE_UP:
-          dest.y -= speed / 30;
-          break;
-        case SDL_SCANCODE_A:
-        case SDL_SCANCODE_LEFT:
-          dest.x -= speed / 30;
-          break;
-        case SDL_SCANCODE_S:
-        case SDL_SCANCODE_DOWN:
-          dest.y += speed / 30;
-          break;
-        case SDL_SCANCODE_D:
-        case SDL_SCANCODE_RIGHT:
-          dest.x += speed / 30;
-          break;
-        default:
-          break;
-        }
+        case SDL_KEYDOWN:
+          // keyboard API for key pressed
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_W:
+            case SDL_SCANCODE_UP:
+              dest.y -= speed / 30;
+              break;
+            case SDL_SCANCODE_A:
+            case SDL_SCANCODE_LEFT:
+              dest.x -= speed / 30;
+              break;
+            case SDL_SCANCODE_S:
+            case SDL_SCANCODE_DOWN:
+              dest.y += speed / 30;
+              break;
+            case SDL_SCANCODE_D:
+            case SDL_SCANCODE_RIGHT:
+              dest.x += speed / 30;
+              break;
+            default:
+              break;
+          }
       }
     }
 
@@ -159,6 +197,9 @@ int main(int argc, char *argv[]) {
 
   // destroy renderer
   SDL_DestroyRenderer(rend);
+
+  SDL_JoystickClose(gGameController);
+  gGameController = NULL;
 
   // destroy window
   SDL_DestroyWindow(win);
